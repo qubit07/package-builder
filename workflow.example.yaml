@@ -1,0 +1,34 @@
+
+tasks:
+- name: dotnet build
+  cwd: dotnetproject
+  type: command
+  commands:
+    - dotnet build -c Release
+
+- name: copy config
+  type: copy
+  from: ../testdotnetproject/rsc
+  to: output/config
+
+- name: npm build
+  cwd: ../testuiproject
+  type: command
+  commands:
+    - npm install
+    - npm run build
+
+- name: copy ui
+  type: copy
+  from: ../testuiproject/build
+  to: ../testdotnetproject/publish
+
+- name: zip files
+  type: tar
+  from: ../testdotnetproject/publish
+  to: output/project.tar.gz
+
+- name: deploy
+  type: ssh
+  from: output/project.tar.gz
+  to: root@127.0.0.1:/temp/project.tar.gz
